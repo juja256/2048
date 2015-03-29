@@ -2,6 +2,8 @@
 #define TWENTYFOURTYEIGHT_H
 
 #define SIZE 4
+#define EMPTY 0
+#define TARGET 2048
 
 #include <vector>
 #include <iostream>
@@ -29,10 +31,10 @@ class field {
 	cell* cur;
 	ostream& os;
 	istream& is;
-	void go_top();
-	void go_left();
-	void go_right();
-	void go_bottom();
+	int go_top();
+	int go_left();
+	int go_right();
+	int go_bottom();
 	void render();
 	void unlock();
 	vector<cell*> get_empty();
