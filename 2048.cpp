@@ -1,5 +1,6 @@
 #include "2048.h"
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -42,6 +43,7 @@ void field::unlock() {
 }
 
 field::field(ostream& os_, istream& is_): os(os_), is(is_) {
+		srand(time(NULL));
 		vector<cell*> empty = get_empty();
 		int x = rand() % empty.size();
 		int d = (rand() % 2 + 1) * 2;
