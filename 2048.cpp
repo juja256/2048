@@ -42,7 +42,11 @@ void field::unlock() {
 			map[i][j].unlock();
 }
 
-field::field(ostream& os_, istream& is_): os(os_), is(is_) {
+int field::get_score() {
+	return score;
+}
+
+field::field(ostream& os_, istream& is_): os(os_), is(is_), score(0) {
 		srand(time(NULL));
 		vector<cell*> empty = get_empty();
 		int x = rand() % empty.size();
@@ -60,21 +64,19 @@ vector<cell*> field::get_empty(){
 }
 
 void field::render() {
-	os<<"+----+\n";
-	for (int j=SIZE-1; j>=0; j--)
-	{
+	os<<"Score: "<<score<<"\n"<<"+--------+\n";
+	for (int j=SIZE-1; j>=0; j--) {
 		os<<" ";
 		for (int i=0; i<SIZE; i++)
 			os<<map[i][j].get_value()<<" ";
 		os<<" \n";
 	}
-	os<<"+----+\n";
+	os<<"+--------+\n";
 }
 
 void field::print_locked() {
 	os<<"LOCKED\n";
-	for (int j=SIZE-1; j>=0; j--)
-	{
+	for (int j=SIZE-1; j>=0; j--) {
 		os<<" ";
 		for (int i=0; i<SIZE; i++)
 			os<<map[i][j].is_locked()<<" ";
@@ -97,26 +99,28 @@ bool field::begin() {
 			case 't': c = go_top(); break;
 			case 'b': c = go_bottom(); break;
 			case 'q': ok = false; break;
-			default: os<<"Your command is wrong, type valid command.\n"; break; 
+			default: os<<"Your command is wrong, type valid command.\n"; continue; break; 
 		}
-		if (!ok) return false;
+		if (!ok) break;
 		#ifdef DEBUG
 		print_locked();
 		#endif
 		unlock();
 		vector<cell*> empty = get_empty();
 		if (empty.size() == 0) { 
-			os<<"Game Over!"; 
+			os<<"Game Over!\n"; 
 			return false;
 		} 
-		if (c!=0) {
+		if (c == TARGET)
+			os<<"You won!\n";
+		if (c != 0) {
 			int x = rand() % empty.size();
 			int d = (rand() % 2 + 1) * 2;
 			empty[x]->init(d);
 		}
 		render();
-		
 	}
+	return true;
 }
 
 int field::go_left() {
@@ -124,8 +128,11 @@ int field::go_left() {
 	for (int i=1; i<SIZE; i++) {
 		for (int j=0; j<SIZE; j++) {
 			if ((map[i][j].get_value() != EMPTY) && (!map[i][j].is_locked())) {
-				if (map[i-1][j].get_value() == map[i][j].get_value()) {
+				if ((map[i-1][j].get_value() == map[i][j].get_value()) && (!map[i-1][j].is_locked())) {
 					map[i-1][j].pow();
+					score += map[i-1][j].get_value();
+					if (map[i-1][j].get_value() == TARGET) 
+						return TARGET; // victory
 					map[i-1][j].lock();
 					map[i][j].init(EMPTY);
 					c++;
@@ -148,8 +155,11 @@ int field::go_right() {
 	for (int i=SIZE-2; i>=0; i--) {
 		for (int j=0; j<SIZE; j++) {
 			if ((map[i][j].get_value() != EMPTY) && (!map[i][j].is_locked())) {
-				if (map[i+1][j].get_value() == map[i][j].get_value()) {
+				if ((map[i+1][j].get_value() == map[i][j].get_value()) && (!map[i+1][j].is_locked())) {
 					map[i+1][j].pow();
+					score += map[i+1][j].get_value();
+					if (map[i+1][j].get_value() == TARGET) 
+						return TARGET;
 					map[i+1][j].lock();
 					map[i][j].init(EMPTY);
 					c++;
@@ -171,8 +181,11 @@ int field::go_top() {
 	for (int j=SIZE-2; j>=0; j--) {
 		for (int i=0; i<SIZE; i++) {
 			if ((map[i][j].get_value() != EMPTY) && (!map[i][j].is_locked())) {
-				if (map[i][j+1].get_value() == map[i][j].get_value()) {
+				if ((map[i][j+1].get_value() == map[i][j].get_value()) && (!map[i][j+1].is_locked())) {
 					map[i][j+1].pow();
+					score += map[i][j+1].get_value();
+					if (map[i][j+1].get_value() == TARGET) 
+						return TARGET;
 					map[i][j+1].lock();
 					map[i][j].init(EMPTY);
 					c++;
@@ -194,8 +207,11 @@ int field::go_bottom() {
 	for (int j=1; j<SIZE; j++) {
 		for (int i=0; i<SIZE; i++) {
 			if ((map[i][j].get_value() != EMPTY) && (!map[i][j].is_locked())) {
-				if (map[i][j-1].get_value() == map[i][j].get_value()) {
+				if ((map[i][j-1].get_value() == map[i][j].get_value()) && (!map[i][j-1].is_locked())) {
 					map[i][j-1].pow();
+					score += map[i][j-1].get_value();
+					if (map[i][j-1].get_value() == TARGET) 
+						return TARGET;
 					map[i][j-1].lock();
 					map[i][j].init(EMPTY);
 					c++;

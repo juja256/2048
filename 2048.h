@@ -31,6 +31,8 @@ class field {
 	cell* cur;
 	ostream& os;
 	istream& is;
+	int score;
+
 	int go_top();
 	int go_left();
 	int go_right();
@@ -40,6 +42,7 @@ class field {
 	vector<cell*> get_empty();
 	void print_locked();
 public:
+	int get_score();
 	field(ostream& os, istream& is);
 	bool begin();
 };
