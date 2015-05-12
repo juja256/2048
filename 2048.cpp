@@ -71,6 +71,18 @@ void field::render() {
 	os<<"+----+\n";
 }
 
+void field::print_locked() {
+	os<<"LOCKED\n";
+	for (int j=SIZE-1; j>=0; j--)
+	{
+		os<<" ";
+		for (int i=0; i<SIZE; i++)
+			os<<map[i][j].is_locked()<<" ";
+		os<<" \n";
+	}
+	os<<"LOCKED\n";
+}
+
 bool field::begin() {
 	bool ok = true; 
 	int c; 
@@ -86,12 +98,15 @@ bool field::begin() {
 			case 'b': c = go_bottom(); break;
 			default: os<<"Your command is wrong, type valid command.\n"; break; 
 		}
+		#ifdef DEBUG
+		print_locked();
+		#endif
 		unlock();
 		vector<cell*> empty = get_empty();
 		if (empty.size() == 0) { 
 			os<<"Game Over!"; 
 			ok = false;
-			break;
+			return false;
 		} 
 		if (c!=0) {
 			int x = rand() % empty.size();
@@ -99,6 +114,7 @@ bool field::begin() {
 			empty[x]->init(d);
 		}
 		render();
+		
 	}
 }
 
@@ -122,6 +138,7 @@ int field::go_left() {
 			}	
 		}
 	}
+
 	return c;
 }
 
@@ -155,7 +172,7 @@ int field::go_top() {
 			if ((map[i][j].get_value() != EMPTY) && (!map[i][j].is_locked())) {
 				if (map[i][j+1].get_value() == map[i][j].get_value()) {
 					map[i][j+1].pow();
-					map[i-1][j].lock();
+					map[i][j+1].lock();
 					map[i][j].init(EMPTY);
 					c++;
 				}
@@ -178,7 +195,7 @@ int field::go_bottom() {
 			if ((map[i][j].get_value() != EMPTY) && (!map[i][j].is_locked())) {
 				if (map[i][j-1].get_value() == map[i][j].get_value()) {
 					map[i][j-1].pow();
-					map[i-1][j].lock();
+					map[i][j-1].lock();
 					map[i][j].init(EMPTY);
 					c++;
 				}

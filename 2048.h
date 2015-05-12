@@ -38,6 +38,7 @@ class field {
 	void render();
 	void unlock();
 	vector<cell*> get_empty();
+	void print_locked();
 public:
 	field(ostream& os, istream& is);
 	bool begin();
