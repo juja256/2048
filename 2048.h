@@ -28,7 +28,6 @@ public:
 class field {
 	char cur_command;
 	cell map[SIZE][SIZE];
-	cell* cur;
 	ostream& os;
 	istream& is;
 	int score;
