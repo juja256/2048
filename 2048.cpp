@@ -86,7 +86,7 @@ void field::print_locked() {
 bool field::begin() {
 	bool ok = true; 
 	int c; 
-	os<<"WELCOME\n2048 the game!\nLet's start: type the letter('r' means right,'l' means left,'t' means top,'b' means bottom)\n";
+	os<<"WELCOME\n2048 the game!\nLet's start: \n'r' - move right\n'l' - move left\n't' -move top\n'b' -move bottom\n'q' - exit\n";
 	render();
 	while (ok) {
 		is>>cur_command;
@@ -96,8 +96,10 @@ bool field::begin() {
 			case 'r': c = go_right(); break;
 			case 't': c = go_top(); break;
 			case 'b': c = go_bottom(); break;
+			case 'q': ok = false; break;
 			default: os<<"Your command is wrong, type valid command.\n"; break; 
 		}
+		if (!ok) return false;
 		#ifdef DEBUG
 		print_locked();
 		#endif
@@ -105,7 +107,6 @@ bool field::begin() {
 		vector<cell*> empty = get_empty();
 		if (empty.size() == 0) { 
 			os<<"Game Over!"; 
-			ok = false;
 			return false;
 		} 
 		if (c!=0) {
